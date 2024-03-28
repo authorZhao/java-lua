@@ -4,7 +4,6 @@ import com.git.lua.lua_h;
 import com.git.util.UserUtil;
 
 import java.lang.foreign.Arena;
-import java.lang.foreign.Linker;
 import java.lang.foreign.MemorySegment;
 
 import static com.git.lua.lauxlib_h.luaL_loadfilex;

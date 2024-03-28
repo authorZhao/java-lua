@@ -9,7 +9,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.git.lua.lua_h.lua_gettop;
 import static java.lang.foreign.MemorySegment.NULL;
 
 /**
@@ -19,8 +18,6 @@ import static java.lang.foreign.MemorySegment.NULL;
 public class LuaUtil {
 
     private final Map<Long, Object> MAP = new ConcurrentHashMap<>();
-    private final Map<Object, MemorySegment> objectMemorySegmentMap = new ConcurrentHashMap<>();
-    private final Arena arena = Arena.ofConfined();
 
     /**
      * #define LUA_TNONE (-1)
@@ -97,10 +94,9 @@ public class LuaUtil {
         } else if (invoke instanceof Boolean number) {
             lua_h.lua_pushboolean(luaState, Boolean.TRUE.equals(number) ? 1 : 0);
         } else if (invoke instanceof String number) {
-            // lua_h.lua_pushlstring(luaState, arena.allocateFrom(number,
-            // StandardCharsets.UTF_8),number.getBytes(StandardCharsets.UTF_8).length);
-
-            lua_h.lua_pushstring(luaState, arena.allocateFrom(number, StandardCharsets.UTF_8));
+            try (Arena arena = Arena.ofConfined()) {
+                lua_h.lua_pushstring(luaState, arena.allocateFrom(number, StandardCharsets.UTF_8));
+            }
         }
     }
 
