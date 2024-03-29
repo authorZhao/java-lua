@@ -29,10 +29,19 @@ public class TestLua3 {
         luaL_openlibs(lua_State);
         var luaUtil = new LuaUtil();
         LuaMathUtil.openJavaMath(lua_State, luaUtil);
+
         UserUtilV2.loadUser(lua_State, User.class, luaUtil);
         try (var arena = Arena.ofConfined()) {
-            int loadResult = luaL_loadfilex(lua_State, arena.allocateFrom("E:/tool/lua5.4-zhao/test4.lua"), NULL);
+            int loadResult = luaL_loadfilex(lua_State,
+                    arena.allocateFrom("E:/java/workspace/space5/java-lua/src/main/com/git/script/test1.lua"),
+                    NULL);
             int iRet = lua_h.lua_pcallk(lua_State, 0, 1, 0, 0L, NULL);
+            int runnable = lua_h.lua_getglobal(lua_State, arena.allocateFrom("runnable"));
+            boolean iscfunction = lua_h.lua_iscfunction(lua_State, -1) == 0;
+            if (iscfunction) {
+                new Thread(() -> lua_h.lua_pcallk(lua_State, 0, 0, 0, 0L, NULL)).start();
+                Thread.sleep(2000L);
+            }
             if (iRet != 0) {
                 printTopStackError(lua_State);
             }

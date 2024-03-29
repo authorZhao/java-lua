@@ -90,7 +90,11 @@ public class LuaUtil {
 
     public void returnLua(Object invoke, MemorySegment luaState) {
         if (invoke instanceof Number number) {
-            lua_h.lua_pushinteger(luaState, number.longValue());
+            if(invoke instanceof Double d){
+                lua_h.lua_pushnumber(luaState, d);
+            }else {
+                lua_h.lua_pushinteger(luaState, number.longValue());
+            }
         } else if (invoke instanceof Boolean number) {
             lua_h.lua_pushboolean(luaState, Boolean.TRUE.equals(number) ? 1 : 0);
         } else if (invoke instanceof String number) {
