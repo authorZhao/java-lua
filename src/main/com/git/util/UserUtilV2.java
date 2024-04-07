@@ -39,7 +39,7 @@ public class UserUtilV2 {
         try (Arena arena = Arena.ofConfined()) {
             lua_h.lua_pushcclosure(lua_State, lua_CFunction.allocate(new NewObject(clazz, luaUtil), Arena.ofAuto()), 0);
             lua_h.lua_setglobal(lua_State, arena.allocateFrom(clazz.getSimpleName()));// 从堆栈上弹出一个值，并将其设为全局变量 name
-                                                                                      
+
             int i = luaL_newmetatable(lua_State, arena.allocateFrom(clazz.getSimpleName())); // 创建一个元表
             // lua_pushvalue(lua_State, -1);
 
@@ -71,6 +71,9 @@ public class UserUtilV2 {
             luaL_Reg.func(slice3, NULL);
 
             luaL_setfuncs(lua_State, memorySegment, 0);
+            lua_h.lua_settop(lua_State,0);
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 

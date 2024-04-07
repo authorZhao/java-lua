@@ -1,17 +1,16 @@
 package com.git.test;
 
+import com.git.lua.LuaLib;
 import com.git.lua.lua_h;
 import com.git.po.User;
-import com.git.util.LuaMathUtil;
-import com.git.util.LuaUtil;
-import com.git.util.UserUtil;
-import com.git.util.UserUtilV2;
+import com.git.util.*;
 
+import java.io.InputStream;
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
+import java.nio.file.Files;
 
-import static com.git.lua.lauxlib_h.luaL_loadfilex;
-import static com.git.lua.lauxlib_h.luaL_newstate;
+import static com.git.lua.lauxlib_h.*;
 import static com.git.lua.lualib_h.luaL_openlibs;
 import static java.lang.foreign.MemorySegment.NULL;
 
@@ -32,9 +31,15 @@ public class TestLua3 {
 
         UserUtilV2.loadUser(lua_State, User.class, luaUtil);
         try (var arena = Arena.ofConfined()) {
-            int loadResult = luaL_loadfilex(lua_State,
-                    arena.allocateFrom("E:/java/workspace/space5/java-lua/src/main/com/git/script/test1.lua"),
-                    NULL);
+            try(InputStream inputStream = TestLua3.class.getResourceAsStream("../script/test1.lua");){
+                String luaCode = FileUtils.readString(inputStream);
+                if(luaCode==null){
+                    System.err.println("luaCode is null");
+                    return;
+                }
+                luaL_loadstring(lua_State, arena.allocateFrom(luaCode));
+            }
+
             int iRet = lua_h.lua_pcallk(lua_State, 0, 1, 0, 0L, NULL);
             int runnable = lua_h.lua_getglobal(lua_State, arena.allocateFrom("runnable"));
             boolean iscfunction = lua_h.lua_iscfunction(lua_State, -1) == 0;

@@ -6,6 +6,8 @@ import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,7 +18,21 @@ import static java.lang.foreign.MemorySegment.NULL;
  * @since 2024-03-25
  */
 public class LuaUtil {
-
+    private static final List<Class<?>> numClasses = List.of(
+            int.class,
+            float.class,
+            double.class,
+            byte.class,
+            long.class,
+            short.class,
+            Integer.class,
+            Float.class,
+            Double.class,
+            Byte.class,
+            Long.class,
+            Short.class,
+            BigDecimal.class
+    );
     private final Map<Long, Object> MAP = new ConcurrentHashMap<>();
 
     /**
@@ -57,6 +73,27 @@ public class LuaUtil {
             }
             default -> {
                 return null;
+            }
+        }
+    }
+
+    public boolean typeMatch(MemorySegment lua_State, int index,Class<?> classType) {
+        int type = lua_h.lua_type(lua_State, index);
+        switch (type) {
+            case 1 -> {
+                return classType == boolean.class || classType == Boolean.class;
+            }
+            case 3 -> {
+                if (lua_h.lua_isinteger(lua_State, index) != 0) {
+                    return classType == int.class || classType == Integer.class;
+                }
+                return numClasses.contains(classType);
+            }
+            case 4 -> {
+                return classType == String.class;
+            }
+            default -> {
+                return true;
             }
         }
     }

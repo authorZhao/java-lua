@@ -34,6 +34,7 @@ public class NewObject implements lua_CFunction.Function {
         Constructor<?>[] constructors = clazz.getConstructors();
         Optional<Constructor<?>> first = Arrays.stream(constructors).filter(i -> cnt == i.getParameterCount()).findFirst();
         if (first.isEmpty()) {
+            System.out.println("new Object Constructor isEmpty " + clazz.getName());
             return 0;
         }
         Class<?>[] parameterTypes = first.get().getParameterTypes();
@@ -45,11 +46,12 @@ public class NewObject implements lua_CFunction.Function {
         try (Arena arena = Arena.ofConfined()) {
             MemorySegment allocate = lua_newuserdatauv(lua_State, ADDRESS.byteSize(), 1);
             Object o = first.get().newInstance(params);
-            System.out.println("o = " + o);
+            System.out.println("new Object java = " + o);
             luaUtil.putObj(allocate.address(), o);
             lua_getfield(lua_State, -luaconf_h.LUAI_MAXSTACK() - 1000, arena.allocateFrom(clazz.getSimpleName()));
             lua_setmetatable(lua_State, -2);
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
         return 1;

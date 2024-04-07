@@ -12,6 +12,10 @@ function test()
 
     print("--------lua start create user---------")
     user = User()
+    if(not user) then
+        print("--------create user nil---------")
+        return
+    end
     print("--------lua print user start---------")
     print(user)
     print("--------lua print user end---------")
@@ -24,9 +28,9 @@ function test()
     print("--------lua print user end---------")
     print("lua name = " .. user:getName())
 
-    --print(user:getName())
-    print(math.max(1, 6))
-    print("javaMath max=" .. "" .. javaMath.max(1, 3))
+    print(user:getName())
+    print(math.max(1, 6.3))
+    print("javaMath max=" .. "" .. javaMath.max(3, 1))
     print("javaMath random=" .. "" .. javaMath.random())
     print("javaMath PI=" .. "" .. javaMath.PI)
     print("javaMath E=" .. "" .. javaMath.E)
