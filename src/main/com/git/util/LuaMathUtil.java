@@ -4,7 +4,6 @@ import com.git.lua.lauxlib_h;
 import com.git.lua.luaL_Reg;
 import com.git.lua.lua_CFunction;
 import com.git.lua.lua_h;
-import com.git.util.handler.MethodHandlerObject;
 import com.git.util.obj.MethodObject;
 
 import java.lang.foreign.Arena;
@@ -55,26 +54,16 @@ public class LuaMathUtil {
                         List<Method> methods = entry.getValue();
                         String name = entry.getKey();
                         Method method = methods.getFirst();
-                        if("max".equals(method.getName())){
-                            method = methods.stream().filter(i->i.getParameterTypes().length>0 && i.getParameterTypes()[0] ==int.class).findFirst().orElse(method);
+                        if ("max".equals(method.getName())) {
+                            method = methods.stream().filter(i -> i.getParameterTypes().length > 0 && i.getParameterTypes()[0] == int.class).findFirst().orElse(method);
                         }
                         MemorySegment slice = luaL_Reg.asSlice(memorySegment, j);
                         luaL_Reg.name(slice, arena.allocateFrom(name));
-                        var callback = MethodHandlerObject.newMethodHandle(MATH_CLASS, method, luaUtil);
-                        //var callback = new MethodObject(method,luaUtil);
+                        //var callback = MethodHandlerObject.newMethodHandle(MATH_CLASS, method, luaUtil);
+                        var callback = new MethodObject(method,luaUtil);
                         MemorySegment allocate = lua_CFunction.allocate(callback, Arena.ofAuto());
-                        System.out.println("methodName allocate = " +method.getName() + ":" + allocate);
+                        System.out.println("methodName allocate = " + method.getName() + ":" + allocate);
                         luaL_Reg.func(slice, allocate);
-                        /*
-                         * if (methods.size() == 1) {
-                         *
-                         * } else {
-                         * MemorySegment slice = luaL_Reg.asSlice(memorySegment, j);
-                         * luaL_Reg.name(slice, arena.allocateFrom(name));
-                         * luaL_Reg.func(slice, lua_CFunction.allocate(new
-                         * OverrideMethodObject(MATH_CLASS, methods, luaUtil), Arena.ofAuto()));
-                         * }
-                         */
                         j++;
                     }
                     for (j = methodMap.size(); j < methodMap.size() + fieldList.size(); j++) {

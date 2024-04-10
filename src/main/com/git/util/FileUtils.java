@@ -55,6 +55,9 @@ public class FileUtils {
     public static String readFromPath(String path){
         try {
             URL url = ResourceUtils.getURL(path);
+            if(url==null){
+                return null;
+            }
             return readString(url.openStream());
         }catch (Exception e){
             e.printStackTrace();

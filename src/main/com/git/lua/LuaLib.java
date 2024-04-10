@@ -3,7 +3,6 @@ package com.git.lua;
 import com.git.util.FileUtils;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.foreign.Arena;
 import java.lang.foreign.Linker;
@@ -12,8 +11,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Enumeration;
-import java.util.Iterator;
 
 /**
  * @author authorZhao
@@ -85,6 +82,9 @@ public class LuaLib {
         }
         File file = path.toFile();
         File[] files = file.getParentFile().listFiles();
+        if(files==null){
+            return;
+        }
         for (File file1 : files) {
             if (file1.isFile() && file1.getName().startsWith(LIB_NAME) && !file1.getName().equals(file.getName())) {
                 String absolutePath = file1.getAbsolutePath();

@@ -4,6 +4,7 @@ import com.git.lua.lua_CFunction;
 import com.git.util.LuaUtil;
 
 import java.lang.foreign.MemorySegment;
+import java.lang.instrument.UnmodifiableClassException;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -15,26 +16,60 @@ import static com.git.lua.lua_h.lua_gettop;
 import static com.git.lua.lua_h.lua_touserdata;
 
 /**
- * 方法执行
+ * <p>
+ * 方法执行，为什么该类的构造函数设置为私有，主要是为了将MethodHandle设置为final，避免根据method再次解析
+ * 相应的也提供了instance方法获取实例
+ * </p>
+ * <p>
+ * 注意该实例经用于静态方法调用，非静态方法发现会有问题
+ * </p>
+ * <p>
+ * MethodHandle不能完全替代反射，在实例方法调用时，按照反射之调用参数对象是Object[]类型不对，调用失败
+ * </p>
  *
  * @author authorZhao
+ * @since 2024-04-10
  */
 public class MethodHandlerObject implements lua_CFunction.Function {
-    // 考虑使用MethodHandle和ffm更加搭配
+    /**
+     * 考虑使用MethodHandle和ffm更加搭配
+     */
     private final MethodHandle methodHandle;
+    /**
+     * 参数个数
+     */
     private final int paramCount;
+    /**
+     * lua参数转换工具列
+     */
     private final LuaUtil luaUtil;
-    private boolean isStatic = false;
+
+    /**
+     * 类全名
+     */
+    private final String className;
+
+    /**
+     * 方法名
+     */
     private final String methodName;
+
+    /**
+     * 参数类型
+     */
     private final Class<?>[] parameterTypes;
+
+    /**
+     * 返回类型
+     */
     private final Class<?> returnType;
 
-    private MethodHandlerObject(MethodHandle methodHandle, int paramCount, LuaUtil luaUtil, boolean isStatic,
-            String methodName, Class<?>[] parameterTypes, Class<?> returnType) {
+    private MethodHandlerObject(MethodHandle methodHandle, int paramCount, LuaUtil luaUtil, String className,
+                                String methodName, Class<?>[] parameterTypes, Class<?> returnType) {
         this.methodHandle = methodHandle;
         this.paramCount = paramCount;
         this.luaUtil = luaUtil;
-        this.isStatic = isStatic;
+        this.className = className;
         this.methodName = methodName;
         this.parameterTypes = parameterTypes;
         this.returnType = returnType;
@@ -43,29 +78,17 @@ public class MethodHandlerObject implements lua_CFunction.Function {
 
     @Override
     public int apply(MemorySegment lua_State) {
-        System.out.println("MethodHandlerObject apply methodName =" + methodName);
-        if (isStatic) {
-            return doStatic(lua_State);
-        }
+        System.out.println("MethodHandlerObject apply claaName = " + className + ",methodName =" + methodName);
         int cnt = lua_gettop(lua_State);
-        if (cnt != paramCount + 1) {
-            System.err.println("method parameter count mismatch = " + methodName);
-            return 0;
-        }
-        MemorySegment memorySegment = lua_touserdata(lua_State, 1);
-        Object instance = luaUtil.getObjByAddress(memorySegment.address());
-        if (instance == null) {
+        if (cnt != paramCount) {
+            System.err.println("static method parameter count mismatch claaName = " + className + ",methodName =" + methodName);
             return 0;
         }
         Object[] params = new Object[parameterTypes.length];
         for (int i = 0; i < parameterTypes.length; i++) {
-            Object object = luaUtil.getObject(lua_State, i + 2, parameterTypes[i]);
+            Object object = luaUtil.getObject(lua_State, i + 1, parameterTypes[i]);
             params[i] = object;
         }
-        return invoke(lua_State, params);
-    }
-
-    private int invoke(MemorySegment lua_State, Object[] params) {
         Object invoke = null;
         try {
             if (params.length == 0) {
@@ -82,42 +105,27 @@ public class MethodHandlerObject implements lua_CFunction.Function {
         if (b) {
             return 0;
         }
+        // 有返回类型进行返回
         luaUtil.returnLua(invoke, lua_State);
         return 1;
     }
 
-    private int doStatic(MemorySegment lua_State) {
-        int cnt = lua_gettop(lua_State);
-        if (cnt != paramCount) {
-            System.err.println("static method parameter count mismatch = " + methodName);
-            return 0;
-        }
-
-        Object[] params = new Object[parameterTypes.length];
-        for (int i = 0; i < parameterTypes.length; i++) {
-            Object object = luaUtil.getObject(lua_State, i + 1, parameterTypes[i]);
-            params[i] = object;
-        }
-        return invoke(lua_State, params);
-    }
-
     public static MethodHandlerObject newMethodHandle(Class<?> clazz, Method method, LuaUtil luaUtil) {
-        boolean isStatic = false;
         MethodHandle methodHandle = null;
         MethodHandles.Lookup lookup = MethodHandles.lookup();
 
         MethodType methodType = MethodType.methodType(method.getReturnType(), method.getParameterTypes());
         try {
             if (Modifier.isStatic(method.getModifiers())) {
-                isStatic = true;
                 methodHandle = lookup.findStatic(clazz, method.getName(), methodType);
             } else {
-                methodHandle = lookup.findSpecial(clazz, method.getName(), methodType, clazz);
+                throw new UnmodifiableClassException(clazz.getName() + "#" + method.getName() + "非静态方法不支持");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return new MethodHandlerObject(methodHandle, method.getParameterCount(), luaUtil, isStatic, method.getName(),
+        return new MethodHandlerObject(methodHandle, method.getParameterCount(), luaUtil, clazz.getName(),
+                method.getName(),
                 method.getParameterTypes(), method.getReturnType());
     }
 
@@ -127,9 +135,6 @@ public class MethodHandlerObject implements lua_CFunction.Function {
             return false;
         }
         int index = 0;
-        if (!isStatic) {
-            index = 1;
-        }
         for (int i = index; i < parameterTypes.length; i++) {
             boolean match = luaUtil.typeMatch(luaState, i, parameterTypes[i]);
             if (!match) {

@@ -23,7 +23,9 @@ import java.net.*;
 
 /**
  * resource工具类,拷贝自同名spring的类
+ * jdk20过时方法警告去掉
  */
+@SuppressWarnings({"deprecation"})
 public class ResourceUtils {
 
 	/** Pseudo URL prefix for loading from the class path: "classpath:". */
@@ -124,7 +126,7 @@ public class ResourceUtils {
 				return file.toURI().toURL();
 			}
 		}catch (MalformedURLException ex2) {
-			System.out.println("Resource location ["+ resourceLocation + "] is neither a URL not a well-formed file path");
+			System.out.println("Resource location 1 ["+ resourceLocation + "] is neither a URL not a well-formed file path");
 		}
 
 		//3.classLoader
@@ -137,7 +139,7 @@ public class ResourceUtils {
 			return new URL(resourceLocation);
 		}catch (MalformedURLException ex) {
 			// no URL -> treat as file path
-			System.out.println("Resource location [" + resourceLocation + "] is neither a URL not a well-formed file path");
+			System.out.println("Resource location 2 [" + resourceLocation + "] is neither a URL not a well-formed file path");
 		}
 		return null;
 	}
