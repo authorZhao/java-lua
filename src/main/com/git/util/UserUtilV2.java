@@ -45,7 +45,7 @@ public class UserUtilV2 {
 
             lua_pushstring(lua_State, arena.allocateFrom("__gc"));
             lua_h.lua_pushcclosure(lua_State, lua_CFunction.allocate(new DestroyObject(luaUtil), Arena.ofAuto()), 0);
-            lua_settable(lua_State, -3);//  k=__gc
+            lua_settable(lua_State, -3);// k=__gc
 
             lua_pushstring(lua_State, arena.allocateFrom("__tostring"));
             lua_h.lua_pushcclosure(lua_State, lua_CFunction.allocate(new TotringObject(luaUtil), Arena.ofAuto()), 0);
@@ -72,7 +72,7 @@ public class UserUtilV2 {
 
             luaL_setfuncs(lua_State, memorySegment, 0);
             lua_h.lua_settop(lua_State,0);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

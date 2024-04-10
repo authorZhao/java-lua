@@ -18,10 +18,10 @@ import static com.git.lua.lua_h.lua_touserdata;
  */
 public class MethodObject implements lua_CFunction.Function {
     // 考虑使用MethodHandle和ffm更加搭配
-    private Method method;
-    private int paramCount;
-    private LuaUtil luaUtil;
-    private boolean isStatic = false;
+    private final Method method;
+    private final int paramCount;
+    private final LuaUtil luaUtil;
+    private final boolean isStatic;
 
     public MethodObject(Method method, LuaUtil luaUtil) {
         this.method = method;

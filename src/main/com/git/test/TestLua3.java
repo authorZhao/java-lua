@@ -3,6 +3,7 @@ package com.git.test;
 import com.git.lua.LuaLib;
 import com.git.lua.lua_h;
 import com.git.po.User;
+import com.git.script.LuaScriptUtil;
 import com.git.util.*;
 
 import java.io.InputStream;
@@ -28,18 +29,13 @@ public class TestLua3 {
         luaL_openlibs(lua_State);
         var luaUtil = new LuaUtil();
         LuaMathUtil.openJavaMath(lua_State, luaUtil);
-
         UserUtilV2.loadUser(lua_State, User.class, luaUtil);
         try (var arena = Arena.ofConfined()) {
-            try(InputStream inputStream = TestLua3.class.getResourceAsStream("../script/test1.lua");){
-                String luaCode = FileUtils.readString(inputStream);
-                if(luaCode==null){
-                    System.err.println("luaCode is null");
-                    return;
-                }
-                luaL_loadstring(lua_State, arena.allocateFrom(luaCode));
+            String luaCode = LuaScriptUtil.readLuaScript("testmath/test2.lua");
+            if (luaCode == null) {
+                return;
             }
-
+            luaL_loadstring(lua_State, arena.allocateFrom(luaCode));
             int iRet = lua_h.lua_pcallk(lua_State, 0, 1, 0, 0L, NULL);
             int runnable = lua_h.lua_getglobal(lua_State, arena.allocateFrom("runnable"));
             boolean iscfunction = lua_h.lua_iscfunction(lua_State, -1) == 0;

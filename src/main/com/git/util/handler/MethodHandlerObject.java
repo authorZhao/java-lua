@@ -29,8 +29,8 @@ public class MethodHandlerObject implements lua_CFunction.Function {
     private final Class<?>[] parameterTypes;
     private final Class<?> returnType;
 
-
-    private MethodHandlerObject(MethodHandle methodHandle, int paramCount, LuaUtil luaUtil, boolean isStatic, String methodName, Class<?>[] parameterTypes, Class<?> returnType) {
+    private MethodHandlerObject(MethodHandle methodHandle, int paramCount, LuaUtil luaUtil, boolean isStatic,
+            String methodName, Class<?>[] parameterTypes, Class<?> returnType) {
         this.methodHandle = methodHandle;
         this.paramCount = paramCount;
         this.luaUtil = luaUtil;
@@ -38,12 +38,12 @@ public class MethodHandlerObject implements lua_CFunction.Function {
         this.methodName = methodName;
         this.parameterTypes = parameterTypes;
         this.returnType = returnType;
-        System.out.println("method name = " + methodName);
+        System.out.println("MethodHandlerObject method name = " + methodName);
     }
-
 
     @Override
     public int apply(MemorySegment lua_State) {
+        System.out.println("MethodHandlerObject apply methodName =" + methodName);
         if (isStatic) {
             return doStatic(lua_State);
         }
@@ -74,6 +74,7 @@ public class MethodHandlerObject implements lua_CFunction.Function {
                 invoke = methodHandle.invokeWithArguments(params);
             }
         } catch (Throwable e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
 
@@ -100,7 +101,6 @@ public class MethodHandlerObject implements lua_CFunction.Function {
         return invoke(lua_State, params);
     }
 
-
     public static MethodHandlerObject newMethodHandle(Class<?> clazz, Method method, LuaUtil luaUtil) {
         boolean isStatic = false;
         MethodHandle methodHandle = null;
@@ -117,7 +117,8 @@ public class MethodHandlerObject implements lua_CFunction.Function {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return new MethodHandlerObject(methodHandle, method.getParameterCount(), luaUtil, isStatic, method.getName(), method.getParameterTypes(), method.getReturnType());
+        return new MethodHandlerObject(methodHandle, method.getParameterCount(), luaUtil, isStatic, method.getName(),
+                method.getParameterTypes(), method.getReturnType());
     }
 
     public boolean match(MemorySegment luaState) {

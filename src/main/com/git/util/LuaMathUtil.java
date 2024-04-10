@@ -4,6 +4,7 @@ import com.git.lua.lauxlib_h;
 import com.git.lua.luaL_Reg;
 import com.git.lua.lua_CFunction;
 import com.git.lua.lua_h;
+import com.git.util.handler.MethodHandlerObject;
 import com.git.util.obj.MethodObject;
 
 import java.lang.foreign.Arena;
@@ -12,6 +13,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,8 +38,8 @@ public class LuaMathUtil {
                 try (Arena arena = Arena.ofConfined()) {
                     Map<String, List<Method>> methodMap = Arrays.stream(MATH_CLASS.getDeclaredMethods())
                             .filter(i -> Modifier.isPublic(i.getModifiers()) && Modifier.isStatic(i.getModifiers()))
+                            .sorted(Comparator.comparing(Method::getName))
                             .collect(Collectors.groupingBy(Method::getName));
-
 
                     List<Field> fieldList = Arrays.stream(MATH_CLASS.getDeclaredFields())
                             .filter(i -> Modifier.isPublic(i.getModifiers()))
@@ -45,24 +47,34 @@ public class LuaMathUtil {
                     luaL_checkversion_(luaState, lua_h.LUA_VERSION_NUM(), lauxlib_h.LUAL_NUMSIZES());
                     lua_h.lua_createtable(luaState, 0, methodMap.size());
 
-                    MemorySegment memorySegment = luaL_Reg.allocateArray(methodMap.size() + fieldList.size() + 1, arena);
+                    MemorySegment memorySegment = luaL_Reg.allocateArray(methodMap.size() + fieldList.size() + 1,
+                            arena);
 
                     int j = 0;
                     for (Map.Entry<String, List<Method>> entry : methodMap.entrySet()) {
                         List<Method> methods = entry.getValue();
                         String name = entry.getKey();
                         Method method = methods.getFirst();
+                        if("max".equals(method.getName())){
+                            method = methods.stream().filter(i->i.getParameterTypes().length>0 && i.getParameterTypes()[0] ==int.class).findFirst().orElse(method);
+                        }
                         MemorySegment slice = luaL_Reg.asSlice(memorySegment, j);
                         luaL_Reg.name(slice, arena.allocateFrom(name));
-                        //MethodHandlerObject.newMethodHandle(MATH_CLASS, method, luaUtil)
-                        luaL_Reg.func(slice, lua_CFunction.allocate(new MethodObject(method,luaUtil), Arena.ofAuto()));
-                       /* if (methods.size() == 1) {
-
-                        } else {
-                            MemorySegment slice = luaL_Reg.asSlice(memorySegment, j);
-                            luaL_Reg.name(slice, arena.allocateFrom(name));
-                            luaL_Reg.func(slice, lua_CFunction.allocate(new OverrideMethodObject(MATH_CLASS, methods, luaUtil), Arena.ofAuto()));
-                        }*/
+                        var callback = MethodHandlerObject.newMethodHandle(MATH_CLASS, method, luaUtil);
+                        //var callback = new MethodObject(method,luaUtil);
+                        MemorySegment allocate = lua_CFunction.allocate(callback, Arena.ofAuto());
+                        System.out.println("methodName allocate = " +method.getName() + ":" + allocate);
+                        luaL_Reg.func(slice, allocate);
+                        /*
+                         * if (methods.size() == 1) {
+                         *
+                         * } else {
+                         * MemorySegment slice = luaL_Reg.asSlice(memorySegment, j);
+                         * luaL_Reg.name(slice, arena.allocateFrom(name));
+                         * luaL_Reg.func(slice, lua_CFunction.allocate(new
+                         * OverrideMethodObject(MATH_CLASS, methods, luaUtil), Arena.ofAuto()));
+                         * }
+                         */
                         j++;
                     }
                     for (j = methodMap.size(); j < methodMap.size() + fieldList.size(); j++) {
