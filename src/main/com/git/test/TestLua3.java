@@ -1,15 +1,11 @@
 package com.git.test;
 
-import com.git.lua.LuaLib;
 import com.git.lua.lua_h;
 import com.git.po.User;
-import com.git.script.LuaScriptUtil;
 import com.git.util.*;
 
-import java.io.InputStream;
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
-import java.nio.file.Files;
 
 import static com.git.lua.lauxlib_h.*;
 import static com.git.lua.lualib_h.luaL_openlibs;
@@ -21,6 +17,10 @@ import static java.lang.foreign.MemorySegment.NULL;
 public class TestLua3 {
 
     public static void main(String[] args) throws NoSuchMethodException, IllegalAccessException {
+        String script = "com/git/script/testmath/test2.lua";
+        if(args!=null && args.length > 0) {
+            script = args[0];
+        }
         var lua_State = luaL_newstate();
         if (lua_State == NULL) {
             return;
@@ -31,7 +31,7 @@ public class TestLua3 {
         LuaMathUtil.openJavaMath(lua_State, luaUtil);
         UserUtilV2.loadUser(lua_State, User.class, luaUtil);
         try (var arena = Arena.ofConfined()) {
-            String luaCode = LuaScriptUtil.readLuaScript("testmath/test2.lua");
+            String luaCode = FileUtils.readFromPath(script);
             if (luaCode == null) {
                 return;
             }

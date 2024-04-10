@@ -1,7 +1,7 @@
 package com.git.util;
 
-
 import java.io.*;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -50,6 +50,16 @@ public class FileUtils {
         int available = source.available();
         byte[] ba = readAllBytes(source, available);
         return new String(ba, StandardCharsets.UTF_8);
+    }
+
+    public static String readFromPath(String path){
+        try {
+            URL url = ResourceUtils.getURL(path);
+            return readString(url.openStream());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static void copy(InputStream inputStream, Path out) throws IOException {
