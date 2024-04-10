@@ -21,6 +21,11 @@ public class TestLua3 {
         if(args!=null && args.length > 0) {
             script = args[0];
         }
+        String luaCode = FileUtils.readFromPath(script);
+        if (luaCode == null) {
+            System.out.println("ERROR: Lua code not found script=" + script);
+            return;
+        }
         var lua_State = luaL_newstate();
         if (lua_State == NULL) {
             return;
@@ -31,10 +36,6 @@ public class TestLua3 {
         LuaMathUtil.openJavaMath(lua_State, luaUtil);
         UserUtilV2.loadUser(lua_State, User.class, luaUtil);
         try (var arena = Arena.ofConfined()) {
-            String luaCode = FileUtils.readFromPath(script);
-            if (luaCode == null) {
-                return;
-            }
             luaL_loadstring(lua_State, arena.allocateFrom(luaCode));
             int iRet = lua_h.lua_pcallk(lua_State, 0, 1, 0, 0L, NULL);
             int runnable = lua_h.lua_getglobal(lua_State, arena.allocateFrom("runnable"));
