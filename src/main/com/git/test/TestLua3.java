@@ -2,6 +2,7 @@ package com.git.test;
 
 import com.git.lua.lua_h;
 import com.git.po.User;
+import com.git.script.LuaScriptUtil;
 import com.git.util.*;
 
 import java.lang.foreign.Arena;
@@ -16,12 +17,18 @@ import static java.lang.foreign.MemorySegment.NULL;
  */
 public class TestLua3 {
 
-    public static void main(String[] args) throws NoSuchMethodException, IllegalAccessException {
+    public static void main(String[] args) throws Exception {
         String script = "com/git/script/testmath/test2.lua";
         if(args!=null && args.length > 0) {
             script = args[0];
+        }else {
+            script = "testmath/test2.lua";
         }
         String luaCode = FileUtils.readFromPath(script);
+        if (luaCode == null) {
+            //兼容java命令行直接运行源文件的报错，这个情况资源加载有点问题，还未解决
+            luaCode = LuaScriptUtil.readLuaScript(script);
+        }
         if (luaCode == null) {
             System.out.println("ERROR: Lua code not found script=" + script);
             return;
