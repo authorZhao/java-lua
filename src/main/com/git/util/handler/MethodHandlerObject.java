@@ -21,7 +21,7 @@ import static com.git.lua.lua_h.lua_touserdata;
  * 相应的也提供了instance方法获取实例
  * </p>
  * <p>
- * 注意该实例经用于静态方法调用，非静态方法发现会有问题
+ * 注意该实例仅仅用于静态方法调用，非静态方法发现会有问题
  * </p>
  * <p>
  * MethodHandle不能完全替代反射，在实例方法调用时，按照反射之调用参数对象是Object[]类型不对，调用失败

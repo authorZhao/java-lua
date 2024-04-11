@@ -19,16 +19,12 @@ public class TestLua3 {
 
     public static void main(String[] args) throws Exception {
         String script = "com/git/script/testmath/test2.lua";
-        if(args!=null && args.length > 0) {
+        // 允许自定义脚本路径
+        if (args != null && args.length > 0) {
             script = args[0];
-        }else {
-            script = "testmath/test2.lua";
         }
+        // 读取lua字符串
         String luaCode = FileUtils.readFromPath(script);
-        if (luaCode == null) {
-            //兼容java命令行直接运行源文件的报错，这个情况资源加载有点问题，还未解决
-            luaCode = LuaScriptUtil.readLuaScript(script);
-        }
         if (luaCode == null) {
             System.out.println("ERROR: Lua code not found script=" + script);
             return;
@@ -40,11 +36,14 @@ public class TestLua3 {
         // 打开内置库
         luaL_openlibs(lua_State);
         var luaUtil = new LuaUtil();
+        // 加载自定义的javaMath库
         LuaMathUtil.openJavaMath(lua_State, luaUtil);
+        // 加载自定义的User模块
         UserUtilV2.loadUser(lua_State, User.class, luaUtil);
         try (var arena = Arena.ofConfined()) {
             luaL_loadstring(lua_State, arena.allocateFrom(luaCode));
             int iRet = lua_h.lua_pcallk(lua_State, 0, 1, 0, 0L, NULL);
+            // 获取lua代码中的runnable函数，开启线程执行
             int runnable = lua_h.lua_getglobal(lua_State, arena.allocateFrom("runnable"));
             boolean iscfunction = lua_h.lua_iscfunction(lua_State, -1) == 0;
             if (iscfunction) {

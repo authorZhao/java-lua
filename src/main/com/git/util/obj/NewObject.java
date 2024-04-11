@@ -15,6 +15,7 @@ import static com.git.lua.lua_h.*;
 import static java.lang.foreign.ValueLayout.ADDRESS;
 
 /**
+ * 新建对象的实现
  * @author authorZhao
  * @since 2024-03-25
  */

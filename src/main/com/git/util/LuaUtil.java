@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static java.lang.foreign.MemorySegment.NULL;
 
 /**
+ * lua工具类，提供lua的指针与java对象的映射关系
  * @author authorZhao
  * @since 2024-03-25
  */
