@@ -1,5 +1,10 @@
 # java22ffm java高度集成lua
 
+## 前戏
+
+[lua编译](./lua-compile.md)
+[lua的capi](./lua-capi.md)
+
 ## 编写测试代码
 
 [TestLua3](../src/main/com/git/test/TestLua3.java)
