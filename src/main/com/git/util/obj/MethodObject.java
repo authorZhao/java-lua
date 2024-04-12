@@ -29,7 +29,7 @@ public class MethodObject implements lua_CFunction.Function {
         this.luaUtil = luaUtil;
         this.paramCount = method.getParameterCount();
         isStatic = Modifier.isStatic(method.getModifiers());
-        System.out.println("method name = " + method.getName());
+        //System.out.println("method name = " + method.getName());
     }
 
     @Override

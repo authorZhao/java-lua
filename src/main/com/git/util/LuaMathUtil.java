@@ -45,9 +45,8 @@ public class LuaMathUtil {
                     // 加载自定义函数库第二步 2.创建表
                     lua_createtable(luaState, 0, methodMap.size());
                     // 申请内存，申请一个数组，存放函数 + 常量 + 结尾占位
-                    MemorySegment memorySegment = luaL_Reg.allocateArray(methodMap.size() + fieldList.size() + 1,
-                            arena);
-
+                    int size = methodMap.size() + fieldList.size() + 1;
+                    MemorySegment memorySegment = luaL_Reg.allocateArray(size, arena);
                     int j = 0;
                     for (Map.Entry<String, List<Method>> entry : methodMap.entrySet()) {
                         List<Method> methods = entry.getValue();
@@ -62,7 +61,7 @@ public class LuaMathUtil {
                         //var callback = MethodHandlerObject.newMethodHandle(MATH_CLASS, method, luaUtil);
                         var callback = new MethodObject(method,luaUtil);
                         MemorySegment allocate = lua_CFunction.allocate(callback, Arena.ofAuto());
-                        System.out.println("methodName allocate = " + method.getName() + ":" + allocate);
+                        System.out.println("methodName allocate = " + method.getName() +","  + j + ":" + allocate);
                         luaL_Reg.func(slice, allocate);
                         j++;
                     }
@@ -72,11 +71,13 @@ public class LuaMathUtil {
                         String name = field.getName();
                         luaL_Reg.name(slice, arena.allocateFrom(name));
                         luaL_Reg.func(slice, NULL);
+                        System.out.println("field allocate j=" + j +","  + field.getName() + ":" + slice);
                     }
 
-                    MemorySegment slice3 = luaL_Reg.asSlice(memorySegment, methodMap.size());
+                    MemorySegment slice3 = luaL_Reg.asSlice(memorySegment, j);
                     luaL_Reg.name(slice3, NULL);
                     luaL_Reg.func(slice3, NULL);
+                    System.out.println("size = " + size +",j="  + j);
 
                     //加载自定义函数库第三步 3.luaL_setfuncs
                     luaL_setfuncs(luaState, memorySegment, 0);
