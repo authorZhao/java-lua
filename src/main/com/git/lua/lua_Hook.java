@@ -31,8 +31,8 @@ public class lua_Hook {
     }
 
     private static final FunctionDescriptor $DESC = FunctionDescriptor.ofVoid(
-        lauxlib_h.C_POINTER,
-        lauxlib_h.C_POINTER
+        luahpp_h.C_POINTER,
+        luahpp_h.C_POINTER
     );
 
     /**
@@ -42,7 +42,7 @@ public class lua_Hook {
         return $DESC;
     }
 
-    private static final MethodHandle UP$MH = lauxlib_h.upcallHandle(lua_Hook.Function.class, "apply", $DESC);
+    private static final MethodHandle UP$MH = luahpp_h.upcallHandle(lua_Hook.Function.class, "apply", $DESC);
 
     /**
      * Allocates a new upcall stub, whose implementation is defined by {@code fi}.

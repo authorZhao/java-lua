@@ -28,9 +28,9 @@ public class _Mbstatet {
     }
 
     private static final GroupLayout $LAYOUT = MemoryLayout.structLayout(
-        lauxlib_h.C_LONG.withName("_Wchar"),
-        lauxlib_h.C_SHORT.withName("_Byte"),
-        lauxlib_h.C_SHORT.withName("_State")
+        luahpp_h.C_LONG.withName("_Wchar"),
+        luahpp_h.C_SHORT.withName("_Byte"),
+        luahpp_h.C_SHORT.withName("_State")
     ).withName("_Mbstatet");
 
     /**

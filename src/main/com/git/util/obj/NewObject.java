@@ -1,7 +1,6 @@
 package com.git.util.obj;
 
 import com.git.lua.lua_CFunction;
-import com.git.lua.luaconf_h;
 import com.git.util.LuaUtil;
 
 import java.lang.foreign.Arena;
@@ -11,7 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static com.git.lua.lua_h.*;
+import static com.git.lua.luahpp_h.*;
 import static java.lang.foreign.ValueLayout.ADDRESS;
 
 /**
@@ -49,7 +48,7 @@ public class NewObject implements lua_CFunction.Function {
             Object o = first.get().newInstance(params);
             System.out.println("new Object java = " + o);
             luaUtil.putObj(allocate.address(), o);
-            lua_getfield(lua_State, -luaconf_h.LUAI_MAXSTACK() - 1000, arena.allocateFrom(clazz.getSimpleName()));
+            lua_getfield(lua_State, -LUAI_MAXSTACK() - 1000, arena.allocateFrom(clazz.getSimpleName()));
             lua_setmetatable(lua_State, -2);
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();

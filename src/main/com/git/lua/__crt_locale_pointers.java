@@ -27,8 +27,8 @@ public class __crt_locale_pointers {
     }
 
     private static final GroupLayout $LAYOUT = MemoryLayout.structLayout(
-        lauxlib_h.C_POINTER.withName("locinfo"),
-        lauxlib_h.C_POINTER.withName("mbcinfo")
+        luahpp_h.C_POINTER.withName("locinfo"),
+        luahpp_h.C_POINTER.withName("mbcinfo")
     ).withName("__crt_locale_pointers");
 
     /**

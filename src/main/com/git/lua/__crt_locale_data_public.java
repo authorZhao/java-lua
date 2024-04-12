@@ -28,9 +28,9 @@ public class __crt_locale_data_public {
     }
 
     private static final GroupLayout $LAYOUT = MemoryLayout.structLayout(
-        lauxlib_h.C_POINTER.withName("_locale_pctype"),
-        lauxlib_h.C_INT.withName("_locale_mb_cur_max"),
-        lauxlib_h.C_INT.withName("_locale_lc_codepage")
+        luahpp_h.C_POINTER.withName("_locale_pctype"),
+        luahpp_h.C_INT.withName("_locale_mb_cur_max"),
+        luahpp_h.C_INT.withName("_locale_lc_codepage")
     ).withName("__crt_locale_data_public");
 
     /**

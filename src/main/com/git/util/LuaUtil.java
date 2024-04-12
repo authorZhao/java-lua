@@ -1,6 +1,6 @@
 package com.git.util;
 
-import com.git.lua.lua_h;
+import static com.git.lua.luahpp_h.*;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
@@ -54,22 +54,22 @@ public class LuaUtil {
      * @return
      */
     public Object getObject(MemorySegment lua_State, int index) {
-        int type = lua_h.lua_type(lua_State, index);
+        int type = lua_type(lua_State, index);
         switch (type) {
             case 1 -> {
-                return lua_h.lua_toboolean(lua_State, index);
+                return lua_toboolean(lua_State, index);
             }
             case 3 -> {
-                return lua_h.lua_tointegerx(lua_State, index, NULL);
+                return lua_tointegerx(lua_State, index, NULL);
             }
             case 4 -> {
                 // string
-                MemorySegment memorySegment = lua_h.lua_tolstring(lua_State, index, NULL);
+                MemorySegment memorySegment = lua_tolstring(lua_State, index, NULL);
                 return memorySegment.getString(0L, StandardCharsets.UTF_8);
             }
             case 7 -> {
                 // userdata
-                MemorySegment memorySegment = lua_h.lua_touserdata(lua_State, index);
+                MemorySegment memorySegment = lua_touserdata(lua_State, index);
                 return MAP.get(memorySegment.address());
             }
             default -> {
@@ -79,13 +79,13 @@ public class LuaUtil {
     }
 
     public boolean typeMatch(MemorySegment lua_State, int index,Class<?> classType) {
-        int type = lua_h.lua_type(lua_State, index);
+        int type = lua_type(lua_State, index);
         switch (type) {
             case 1 -> {
                 return classType == boolean.class || classType == Boolean.class;
             }
             case 3 -> {
-                if (lua_h.lua_isinteger(lua_State, index) != 0) {
+                if (lua_isinteger(lua_State, index) != 0) {
                     return classType == int.class || classType == Integer.class;
                 }
                 return numClasses.contains(classType);
@@ -129,15 +129,15 @@ public class LuaUtil {
     public void returnLua(Object invoke, MemorySegment luaState) {
         if (invoke instanceof Number number) {
             if(invoke instanceof Double d){
-                lua_h.lua_pushnumber(luaState, d);
+                lua_pushnumber(luaState, d);
             }else {
-                lua_h.lua_pushinteger(luaState, number.longValue());
+                lua_pushinteger(luaState, number.longValue());
             }
         } else if (invoke instanceof Boolean number) {
-            lua_h.lua_pushboolean(luaState, Boolean.TRUE.equals(number) ? 1 : 0);
+            lua_pushboolean(luaState, Boolean.TRUE.equals(number) ? 1 : 0);
         } else if (invoke instanceof String number) {
             try (Arena arena = Arena.ofConfined()) {
-                lua_h.lua_pushstring(luaState, arena.allocateFrom(number, StandardCharsets.UTF_8));
+                lua_pushstring(luaState, arena.allocateFrom(number, StandardCharsets.UTF_8));
             }
         }
     }

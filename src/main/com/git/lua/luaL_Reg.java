@@ -27,8 +27,8 @@ public class luaL_Reg {
     }
 
     private static final GroupLayout $LAYOUT = MemoryLayout.structLayout(
-        lauxlib_h.C_POINTER.withName("name"),
-        lauxlib_h.C_POINTER.withName("func")
+        luahpp_h.C_POINTER.withName("name"),
+        luahpp_h.C_POINTER.withName("func")
     ).withName("luaL_Reg");
 
     /**

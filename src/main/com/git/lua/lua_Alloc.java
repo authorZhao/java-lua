@@ -31,11 +31,11 @@ public class lua_Alloc {
     }
 
     private static final FunctionDescriptor $DESC = FunctionDescriptor.of(
-        lauxlib_h.C_POINTER,
-        lauxlib_h.C_POINTER,
-        lauxlib_h.C_POINTER,
-        lauxlib_h.C_LONG_LONG,
-        lauxlib_h.C_LONG_LONG
+        luahpp_h.C_POINTER,
+        luahpp_h.C_POINTER,
+        luahpp_h.C_POINTER,
+        luahpp_h.C_LONG_LONG,
+        luahpp_h.C_LONG_LONG
     );
 
     /**
@@ -45,7 +45,7 @@ public class lua_Alloc {
         return $DESC;
     }
 
-    private static final MethodHandle UP$MH = lauxlib_h.upcallHandle(lua_Alloc.Function.class, "apply", $DESC);
+    private static final MethodHandle UP$MH = luahpp_h.upcallHandle(lua_Alloc.Function.class, "apply", $DESC);
 
     /**
      * Allocates a new upcall stub, whose implementation is defined by {@code fi}.

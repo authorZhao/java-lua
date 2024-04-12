@@ -5,11 +5,12 @@ import com.git.util.LuaUtil;
 
 import java.lang.foreign.MemorySegment;
 
-import static com.git.lua.lua_h.lua_touserdata;
+import static com.git.lua.luahpp_h.lua_touserdata;
+
 
 /**
  * 销毁方法
- * 
+ *
  * @author authorZhao
  */
 public class DestroyObject implements lua_CFunction.Function {

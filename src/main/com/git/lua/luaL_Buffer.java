@@ -37,10 +37,10 @@ public class luaL_Buffer {
     }
 
     private static final GroupLayout $LAYOUT = MemoryLayout.structLayout(
-        lauxlib_h.C_POINTER.withName("b"),
-        lauxlib_h.C_LONG_LONG.withName("size"),
-        lauxlib_h.C_LONG_LONG.withName("n"),
-        lauxlib_h.C_POINTER.withName("L"),
+        luahpp_h.C_POINTER.withName("b"),
+        luahpp_h.C_LONG_LONG.withName("size"),
+        luahpp_h.C_LONG_LONG.withName("n"),
+        luahpp_h.C_POINTER.withName("L"),
         luaL_Buffer.init.layout().withName("init")
     ).withName("luaL_Buffer");
 
@@ -246,12 +246,12 @@ public class luaL_Buffer {
         }
 
         private static final GroupLayout $LAYOUT = MemoryLayout.unionLayout(
-            lauxlib_h.C_DOUBLE.withName("n"),
-            lauxlib_h.C_DOUBLE.withName("u"),
-            lauxlib_h.C_POINTER.withName("s"),
-            lauxlib_h.C_LONG_LONG.withName("i"),
-            lauxlib_h.C_LONG.withName("l"),
-            MemoryLayout.sequenceLayout(1024, lauxlib_h.C_CHAR).withName("b")
+            luahpp_h.C_DOUBLE.withName("n"),
+            luahpp_h.C_DOUBLE.withName("u"),
+            luahpp_h.C_POINTER.withName("s"),
+            luahpp_h.C_LONG_LONG.withName("i"),
+            luahpp_h.C_LONG.withName("l"),
+            MemoryLayout.sequenceLayout(1024, luahpp_h.C_CHAR).withName("b")
         ).withName("$anon$196:3");
 
         /**

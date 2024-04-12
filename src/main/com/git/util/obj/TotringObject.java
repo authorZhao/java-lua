@@ -5,7 +5,8 @@ import com.git.util.LuaUtil;
 
 import java.lang.foreign.MemorySegment;
 
-import static com.git.lua.lua_h.lua_touserdata;
+import static com.git.lua.luahpp_h.lua_touserdata;
+
 
 /**
  * toString的实现

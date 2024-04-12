@@ -42,24 +42,24 @@ public class lua_Debug {
     }
 
     private static final GroupLayout $LAYOUT = MemoryLayout.structLayout(
-        lauxlib_h.C_INT.withName("event"),
+        luahpp_h.C_INT.withName("event"),
         MemoryLayout.paddingLayout(4),
-        lauxlib_h.C_POINTER.withName("name"),
-        lauxlib_h.C_POINTER.withName("namewhat"),
-        lauxlib_h.C_POINTER.withName("what"),
-        lauxlib_h.C_POINTER.withName("source"),
-        lauxlib_h.C_LONG_LONG.withName("srclen"),
-        lauxlib_h.C_INT.withName("currentline"),
-        lauxlib_h.C_INT.withName("linedefined"),
-        lauxlib_h.C_INT.withName("lastlinedefined"),
-        lauxlib_h.C_CHAR.withName("nups"),
-        lauxlib_h.C_CHAR.withName("nparams"),
-        lauxlib_h.C_CHAR.withName("isvararg"),
-        lauxlib_h.C_CHAR.withName("istailcall"),
-        lauxlib_h.C_SHORT.withName("ftransfer"),
-        lauxlib_h.C_SHORT.withName("ntransfer"),
-        MemoryLayout.sequenceLayout(60, lauxlib_h.C_CHAR).withName("short_src"),
-        lauxlib_h.C_POINTER.withName("i_ci")
+        luahpp_h.C_POINTER.withName("name"),
+        luahpp_h.C_POINTER.withName("namewhat"),
+        luahpp_h.C_POINTER.withName("what"),
+        luahpp_h.C_POINTER.withName("source"),
+        luahpp_h.C_LONG_LONG.withName("srclen"),
+        luahpp_h.C_INT.withName("currentline"),
+        luahpp_h.C_INT.withName("linedefined"),
+        luahpp_h.C_INT.withName("lastlinedefined"),
+        luahpp_h.C_CHAR.withName("nups"),
+        luahpp_h.C_CHAR.withName("nparams"),
+        luahpp_h.C_CHAR.withName("isvararg"),
+        luahpp_h.C_CHAR.withName("istailcall"),
+        luahpp_h.C_SHORT.withName("ftransfer"),
+        luahpp_h.C_SHORT.withName("ntransfer"),
+        MemoryLayout.sequenceLayout(60, luahpp_h.C_CHAR).withName("short_src"),
+        luahpp_h.C_POINTER.withName("i_ci")
     ).withName("lua_Debug");
 
     /**

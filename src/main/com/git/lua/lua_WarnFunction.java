@@ -31,9 +31,9 @@ public class lua_WarnFunction {
     }
 
     private static final FunctionDescriptor $DESC = FunctionDescriptor.ofVoid(
-        lauxlib_h.C_POINTER,
-        lauxlib_h.C_POINTER,
-        lauxlib_h.C_INT
+        luahpp_h.C_POINTER,
+        luahpp_h.C_POINTER,
+        luahpp_h.C_INT
     );
 
     /**
@@ -43,7 +43,7 @@ public class lua_WarnFunction {
         return $DESC;
     }
 
-    private static final MethodHandle UP$MH = lauxlib_h.upcallHandle(lua_WarnFunction.Function.class, "apply", $DESC);
+    private static final MethodHandle UP$MH = luahpp_h.upcallHandle(lua_WarnFunction.Function.class, "apply", $DESC);
 
     /**
      * Allocates a new upcall stub, whose implementation is defined by {@code fi}.

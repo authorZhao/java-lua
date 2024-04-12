@@ -22,9 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.git.lua.lauxlib_h.luaL_newmetatable;
-import static com.git.lua.lauxlib_h.luaL_setfuncs;
-import static com.git.lua.lua_h.*;
+import static com.git.lua.luahpp_h.*;
 import static java.lang.foreign.MemorySegment.NULL;
 import static java.lang.foreign.ValueLayout.ADDRESS;
 import static java.lang.foreign.ValueLayout.JAVA_LONG;
@@ -37,18 +35,18 @@ public class UserUtilV2 {
 
     public static void loadUser(MemorySegment lua_State, Class<?> clazz, LuaUtil luaUtil) {
         try (Arena arena = Arena.ofConfined()) {
-            lua_h.lua_pushcclosure(lua_State, lua_CFunction.allocate(new NewObject(clazz, luaUtil), Arena.ofAuto()), 0);
-            lua_h.lua_setglobal(lua_State, arena.allocateFrom(clazz.getSimpleName()));// 从堆栈上弹出一个值，并将其设为全局变量 name
+            lua_pushcclosure(lua_State, lua_CFunction.allocate(new NewObject(clazz, luaUtil), Arena.ofAuto()), 0);
+            lua_setglobal(lua_State, arena.allocateFrom(clazz.getSimpleName()));// 从堆栈上弹出一个值，并将其设为全局变量 name
 
             int i = luaL_newmetatable(lua_State, arena.allocateFrom(clazz.getSimpleName())); // 创建一个元表
             // lua_pushvalue(lua_State, -1);
 
             lua_pushstring(lua_State, arena.allocateFrom("__gc"));
-            lua_h.lua_pushcclosure(lua_State, lua_CFunction.allocate(new DestroyObject(luaUtil), Arena.ofAuto()), 0);
+            lua_pushcclosure(lua_State, lua_CFunction.allocate(new DestroyObject(luaUtil), Arena.ofAuto()), 0);
             lua_settable(lua_State, -3);// k=__gc
 
             lua_pushstring(lua_State, arena.allocateFrom("__tostring"));
-            lua_h.lua_pushcclosure(lua_State, lua_CFunction.allocate(new TotringObject(luaUtil), Arena.ofAuto()), 0);
+            lua_pushcclosure(lua_State, lua_CFunction.allocate(new TotringObject(luaUtil), Arena.ofAuto()), 0);
             lua_settable(lua_State, -3);
 
             lua_pushstring(lua_State, arena.allocateFrom("__index"));
@@ -71,7 +69,7 @@ public class UserUtilV2 {
             luaL_Reg.func(slice3, NULL);
 
             luaL_setfuncs(lua_State, memorySegment, 0);
-            lua_h.lua_settop(lua_State,0);
+            lua_settop(lua_State,0);
         } catch (Exception e) {
             e.printStackTrace();
         }

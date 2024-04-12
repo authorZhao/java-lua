@@ -12,8 +12,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import static com.git.lua.lua_h.lua_gettop;
-import static com.git.lua.lua_h.lua_touserdata;
+import static com.git.lua.luahpp_h.lua_gettop;
+
 
 /**
  * <p>

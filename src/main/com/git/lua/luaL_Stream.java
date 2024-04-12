@@ -27,8 +27,8 @@ public class luaL_Stream {
     }
 
     private static final GroupLayout $LAYOUT = MemoryLayout.structLayout(
-        lauxlib_h.C_POINTER.withName("f"),
-        lauxlib_h.C_POINTER.withName("closef")
+        luahpp_h.C_POINTER.withName("f"),
+        luahpp_h.C_POINTER.withName("closef")
     ).withName("luaL_Stream");
 
     /**

@@ -1,15 +1,12 @@
 package com.git.test;
 
-import com.git.lua.lua_h;
 import com.git.po.User;
-import com.git.script.LuaScriptUtil;
 import com.git.util.*;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 
-import static com.git.lua.lauxlib_h.*;
-import static com.git.lua.lualib_h.luaL_openlibs;
+import static com.git.lua.luahpp_h.*;
 import static java.lang.foreign.MemorySegment.NULL;
 
 /**
@@ -42,12 +39,12 @@ public class TestLua3 {
         UserUtilV2.loadUser(lua_State, User.class, luaUtil);
         try (var arena = Arena.ofConfined()) {
             luaL_loadstring(lua_State, arena.allocateFrom(luaCode));
-            int iRet = lua_h.lua_pcallk(lua_State, 0, 1, 0, 0L, NULL);
+            int iRet = lua_pcallk(lua_State, 0, 1, 0, 0L, NULL);
             // 获取lua代码中的runnable函数，开启线程执行
-            int runnable = lua_h.lua_getglobal(lua_State, arena.allocateFrom("runnable"));
-            boolean iscfunction = lua_h.lua_iscfunction(lua_State, -1) == 0;
+            int runnable = lua_getglobal(lua_State, arena.allocateFrom("runnable"));
+            boolean iscfunction = lua_iscfunction(lua_State, -1) == 0;
             if (iscfunction) {
-                new Thread(() -> lua_h.lua_pcallk(lua_State, 0, 0, 0, 0L, NULL)).start();
+                new Thread(() -> lua_pcallk(lua_State, 0, 0, 0, 0L, NULL)).start();
                 Thread.sleep(2000L);
             }
             if (iRet != 0) {
@@ -57,14 +54,14 @@ public class TestLua3 {
             e.printStackTrace();
         }
         // 关闭lua虚拟机
-        lua_h.lua_close(lua_State);
+        lua_close(lua_State);
     }
 
     public static void printTopStackError(MemorySegment lua_State) {
-        var luaType = lua_h.lua_type(lua_State, -1);
+        var luaType = lua_type(lua_State, -1);
         System.out.println("luaType = " + luaType);
-        if (lua_h.LUA_TSTRING() == luaType) {
-            var data2 = lua_h.lua_tolstring(lua_State, -1, NULL);
+        if (LUA_TSTRING() == luaType) {
+            var data2 = lua_tolstring(lua_State, -1, NULL);
             var param2 = data2.getString(0L);
             System.out.println("lua error info = " + param2);
         }

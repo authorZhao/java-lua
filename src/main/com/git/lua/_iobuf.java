@@ -26,7 +26,7 @@ public class _iobuf {
     }
 
     private static final GroupLayout $LAYOUT = MemoryLayout.structLayout(
-        lauxlib_h.C_POINTER.withName("_Placeholder")
+        luahpp_h.C_POINTER.withName("_Placeholder")
     ).withName("_iobuf");
 
     /**

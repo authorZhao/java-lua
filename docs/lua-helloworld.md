@@ -23,6 +23,18 @@ jextract --output src -t com.lua -I "E:/tool/lua-5.4.4/src" "E:/tool/lua-5.4.4/s
 jextract --output src -t com.lua -I "E:/tool/lua-5.4.4/src" "E:/tool/lua-5.4.4/src/lualib.h" -l :E:/tool/lua5.4-zhao/liblua5.4.0.dll
 
 jextract --output src -t com.lua -I "E:/tool/lua-5.4.4/src" "E:/tool/lua-5.4.4/src/lauxlib.h" -l :E:/tool/lua5.4-zhao/liblua5.4.0.dll
+
+# 可以直接把lua.hpp改名为.h，使用一个文件直接生成
+
+
+
+```
+luahpp.h
+```c
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
+
 ```
 
 ![生成操作图](https://opadmin.pingyuanren.top/file/png/2024/9677d50e519045eba35dff8f874a4fb2.png)
@@ -75,8 +87,8 @@ public class LuaMain {
                 return;
             }
             // pcall
-            lua_h.lua_pcallk(lua_State, 0, 1, 0, 0L, NULL);
-            var data2 = lua_h.lua_tolstring(lua_State, -1, NULL);
+            lua_pcallk(lua_State, 0, 1, 0, 0L, NULL);
+            var data2 = lua_tolstring(lua_State, -1, NULL);
             System.out.println("data2 = " + data2.getUtf8String(0L));
 
             //这里的utf-8可能对中文路径有问题,英文影响应该不大
@@ -84,16 +96,16 @@ public class LuaMain {
             System.out.println("loadResult = " + loadResult);
 
             // pcall
-            int iRet = lua_h.lua_pcallk(lua_State, 0, 1, 0, 0L, NULL);
+            int iRet = lua_pcallk(lua_State, 0, 1, 0, 0L, NULL);
 
             if (iRet == 0) {
-                var data = lua_h.lua_tointegerx(lua_State, -1, NULL);
+                var data = lua_tointegerx(lua_State, -1, NULL);
                 System.out.println("data = " + data);
             }
 
         }
         //关闭lua虚拟机
-        lua_h.lua_close(lua_State);
+        lua_close(lua_State);
     }
 }
 ```

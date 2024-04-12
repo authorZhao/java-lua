@@ -8,9 +8,7 @@ import java.lang.foreign.MemoryLayout;
 import java.lang.foreign.MemorySegment;
 import java.nio.charset.StandardCharsets;
 
-import static com.git.lua.lauxlib_h.luaL_newmetatable;
-import static com.git.lua.lauxlib_h.luaL_setfuncs;
-import static com.git.lua.lua_h.*;
+import static com.git.lua.luahpp_h.*;
 import static java.lang.foreign.MemorySegment.NULL;
 import static java.lang.foreign.ValueLayout.ADDRESS;
 import static java.lang.foreign.ValueLayout.JAVA_LONG;
@@ -24,8 +22,8 @@ public class UserUtil {
     public static final String USER = "User";
     public static void loadUser(MemorySegment lua_State) {
         try (Arena arena = Arena.ofConfined()) {
-            lua_h.lua_pushcclosure(lua_State, lua_CFunction.allocate(new NewUser(), Arena.ofAuto()), 0);
-            lua_h.lua_setglobal(lua_State, arena.allocateFrom(USER));//从堆栈上弹出一个值，并将其设为全局变量 name 的新值。，这个值就是，CreatePerson
+            lua_pushcclosure(lua_State, lua_CFunction.allocate(new NewUser(), Arena.ofAuto()), 0);
+            lua_setglobal(lua_State, arena.allocateFrom(USER));//从堆栈上弹出一个值，并将其设为全局变量 name 的新值。，这个值就是，CreatePerson
             //如果注册表中已存在键 tname，返回 0 。 否则， 为用户数据的元表创建一张新表。 向这张表加入 __name = tname 键值对， 并将 [tname] = new table 添加到注册表中， 返回 1 。 （__name项可用于一些错误输出函数。）
 
             //这两种情况都会把最终的注册表中关联 tname 的值压栈。
@@ -37,7 +35,7 @@ public class UserUtil {
 
             lua_pushstring(lua_State, arena.allocateFrom("__gc"));
             // 垃圾回收，将指针 s 指向的零结尾的字符串压栈。 因此 s 处的内存在函数返回后，可以释放掉或是立刻重用于其它用途。
-            lua_h.lua_pushcclosure(lua_State, lua_CFunction.allocate(new DestroyUser(), Arena.ofAuto()), 0);
+            lua_pushcclosure(lua_State, lua_CFunction.allocate(new DestroyUser(), Arena.ofAuto()), 0);
             //做一个等价于 t[k] = v 的操作， 这里 t 是给出的索引处的值， v 是栈顶的那个值， k 是栈顶之下的值。
             //这个函数会将键和值都弹出栈。 跟在 Lua 中一样，这个函数可能触发一个 "newindex" 事件的元方法 （参见 §2.4）。
             lua_settable(lua_State, -3);//此时-3位置应该是  v=CreatePerson , k=__gc
@@ -78,7 +76,7 @@ public class UserUtil {
 
             String name = memorySegment.getString(8L);
             System.out.println("name = " + name);
-            lua_h.lua_pushstring(lua_State, memorySegment.asSlice(8L, ADDRESS));
+            lua_pushstring(lua_State, memorySegment.asSlice(8L, ADDRESS));
             return 1;
         }
     }
@@ -127,9 +125,9 @@ public class UserUtil {
     static class NewUser implements lua_CFunction.Function {
         @Override
         public int apply(MemorySegment lua_State) {
-            var age = lua_h.lua_tointegerx(lua_State, 1, NULL);
-            var elem1 = lua_h.lua_tolstring(lua_State, 2, NULL);
-            var sex = lua_h.lua_tointegerx(lua_State, 3, NULL);
+            var age = lua_tointegerx(lua_State, 1, NULL);
+            var elem1 = lua_tolstring(lua_State, 2, NULL);
+            var sex = lua_tointegerx(lua_State, 3, NULL);
             String name = elem1.getString(0L);
 
             MemoryLayout memoryLayout = MemoryLayout.structLayout(JAVA_LONG.withName("age"), ADDRESS.withName("name"), JAVA_LONG.withName("sex"));
@@ -138,7 +136,7 @@ public class UserUtil {
                 allocate.set(JAVA_LONG,0L,age);
                 allocate.setString(8L,name);
                 allocate.set(JAVA_LONG,16L,sex);
-                int type = lua_getfield(lua_State, -luaconf_h.LUAI_MAXSTACK() - 1000, arena.allocateFrom(USER));
+                int type = lua_getfield(lua_State, -LUAI_MAXSTACK() - 1000, arena.allocateFrom(USER));
                 int i = lua_setmetatable(lua_State, -2);
 
                 //*(Person**)lua_newuserdata(l, sizeof(Person*)) = new Person();//-1

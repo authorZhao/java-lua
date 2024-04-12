@@ -1,9 +1,7 @@
 package com.git.util;
 
-import com.git.lua.lauxlib_h;
 import com.git.lua.luaL_Reg;
 import com.git.lua.lua_CFunction;
-import com.git.lua.lua_h;
 import com.git.util.obj.MethodObject;
 
 import java.lang.foreign.Arena;
@@ -17,9 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.git.lua.lauxlib_h.luaL_checkversion_;
-import static com.git.lua.lauxlib_h.luaL_setfuncs;
-import static com.git.lua.lua_h.*;
+import static com.git.lua.luahpp_h.*;
 import static java.lang.foreign.MemorySegment.NULL;
 
 /**
@@ -45,9 +41,9 @@ public class LuaMathUtil {
                             .filter(i -> Modifier.isPublic(i.getModifiers()))
                             .toList();
                     // 加载自定义函数库第一步 1.校验
-                    luaL_checkversion_(luaState, lua_h.LUA_VERSION_NUM(), lauxlib_h.LUAL_NUMSIZES());
+                    luaL_checkversion_(luaState, LUA_VERSION_NUM(), LUAL_NUMSIZES());
                     // 加载自定义函数库第二步 2.创建表
-                    lua_h.lua_createtable(luaState, 0, methodMap.size());
+                    lua_createtable(luaState, 0, methodMap.size());
                     // 申请内存，申请一个数组，存放函数 + 常量 + 结尾占位
                     MemorySegment memorySegment = luaL_Reg.allocateArray(methodMap.size() + fieldList.size() + 1,
                             arena);
@@ -104,7 +100,7 @@ public class LuaMathUtil {
         try (Arena arena = Arena.ofConfined()) {
             MemorySegment allocate = lua_CFunction.allocate(luaopen_java_math, arena);
             // luaL_newlib
-            lauxlib_h.luaL_requiref(L, arena.allocateFrom("JavaMath"), allocate, 1);
+            luaL_requiref(L, arena.allocateFrom("JavaMath"), allocate, 1);
             lua_settop(L, -2);
         }
 
