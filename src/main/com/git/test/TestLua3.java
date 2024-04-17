@@ -15,6 +15,8 @@ import static java.lang.foreign.MemorySegment.NULL;
 public class TestLua3 {
 
     public static void main(String[] args) throws Exception {
+//        System.setProperty("sun.misc.ProxyGenerator.saveGeneratedFiles","true");
+//        System.setProperty("jextract.trace.downcalls","true");
         String script = "com/git/script/testmath/test2.lua";
         // 允许自定义脚本路径
         if (args != null && args.length > 0) {

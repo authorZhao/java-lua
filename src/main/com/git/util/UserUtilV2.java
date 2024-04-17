@@ -35,7 +35,10 @@ public class UserUtilV2 {
 
     public static void loadUser(MemorySegment lua_State, Class<?> clazz, LuaUtil luaUtil) {
         try (Arena arena = Arena.ofConfined()) {
-            lua_pushcclosure(lua_State, lua_CFunction.allocate(new NewObject(clazz, luaUtil), Arena.ofAuto()), 0);
+            MemorySegment allocate1 = lua_CFunction.allocate(new NewObject(clazz, luaUtil), Arena.ofAuto());
+            //System.out.println("userUtilV2 methodName = User,allocate = " + allocate1);
+
+            lua_pushcclosure(lua_State, allocate1, 0);
             lua_setglobal(lua_State, arena.allocateFrom(clazz.getSimpleName()));// 从堆栈上弹出一个值，并将其设为全局变量 name
 
             int i = luaL_newmetatable(lua_State, arena.allocateFrom(clazz.getSimpleName())); // 创建一个元表
@@ -61,7 +64,9 @@ public class UserUtilV2 {
                 MemorySegment slice = luaL_Reg.asSlice(memorySegment, j);
                 String name = method.getName();
                 luaL_Reg.name(slice, arena.allocateFrom(name));
-                luaL_Reg.func(slice, lua_CFunction.allocate(new MethodObject(method, luaUtil), Arena.ofAuto()));
+                MemorySegment allocate = lua_CFunction.allocate(new MethodObject(method, luaUtil), Arena.ofAuto());
+                //System.out.println("userUtilV2 methodName=" + name +",allocate = " + allocate);
+                luaL_Reg.func(slice, allocate);
             }
 
             MemorySegment slice3 = luaL_Reg.asSlice(memorySegment, list.size());

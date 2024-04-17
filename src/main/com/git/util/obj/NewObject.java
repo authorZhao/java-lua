@@ -46,11 +46,11 @@ public class NewObject implements lua_CFunction.Function {
         try (Arena arena = Arena.ofConfined()) {
             MemorySegment allocate = lua_newuserdatauv(lua_State, ADDRESS.byteSize(), 1);
             Object o = first.get().newInstance(params);
-            System.out.println("new Object java = " + o);
+            //System.out.println("new Object java = " + o + "allocate=" + allocate);
             luaUtil.putObj(allocate.address(), o);
             lua_getfield(lua_State, -LUAI_MAXSTACK() - 1000, arena.allocateFrom(clazz.getSimpleName()));
             lua_setmetatable(lua_State, -2);
-        } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }

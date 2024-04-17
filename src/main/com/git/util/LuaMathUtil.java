@@ -60,7 +60,7 @@ public class LuaMathUtil {
                         luaL_Reg.name(slice, arena.allocateFrom(name));
                         //var callback = MethodHandlerObject.newMethodHandle(MATH_CLASS, method, luaUtil);
                         var callback = new MethodObject(method,luaUtil);
-                        MemorySegment allocate = lua_CFunction.allocate(callback, Arena.ofAuto());
+                        MemorySegment allocate = lua_CFunction.allocate(callback, Arena.ofConfined());
                         System.out.println("methodName allocate = " + method.getName() +","  + j + ":" + allocate);
                         luaL_Reg.func(slice, allocate);
                         j++;

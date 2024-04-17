@@ -17,7 +17,7 @@ end
 function test()
     print("--------print table---------")
     printTable(javaMath)
-
+    print(User)
     print("--------lua start create user---------")
     user = User()
     if(not user) then
